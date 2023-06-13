@@ -20,6 +20,7 @@
 
         data: function () {
             return {
+                i: 0,
                 iconRetina: this.field.iconRetinaUrl
                     || '/vendor/leaflet/dist/images/marker-icon-2x.png',
                 icon: this.field.iconUrl
@@ -56,6 +57,14 @@
                 this.map = this.$refs.map.mapObject;
                 this.setInitialValue();
             });
+
+            let locationTab = document.querySelector('div[dusk="contact-location-tab"]');
+            if(locationTab) {
+                locationTab.addEventListener('click', () => {
+                    this.methodThatForcesUpdate();
+                });
+            }
+            
         },
 
         created: function () {
@@ -194,6 +203,11 @@
                 this.setValue(event.lat, event.long);
                 this.map.panTo(center, {animate:true});
             },
+
+             methodThatForcesUpdate() {
+                this.i++;
+                this.$forceUpdate(); 
+            }
         },
     };
 </script>
@@ -204,10 +218,13 @@
         :field="field"
         :full-width-content="true"
     >
-        <template slot="field">
-            <div class="map-field z-10 p-0 w-full form-control form-input-bordered overflow-hidden relative"
+        
+        <template slot="field" >
+            <div class="relative z-10 w-full p-0 overflow-hidden map-field form-control form-input-bordered" 
+                :key="i"
                 :class="mapErrorClasses"
             >
+                <button @click.prevent="methodThatForcesUpdate" class="absolute top-0 right-0 p-4 text-white bg-blue-500 z-100 round-bl-sm" type="button" style="z-index:999;">Reload Map</button>
                 <l-map
                     :id="field.name"
                     ref="map"
@@ -237,6 +254,7 @@
                         :fillOpacity="circleOpacity"
                     />
                 </l-map>
+                
             </div>
         </template>
     </default-field>
